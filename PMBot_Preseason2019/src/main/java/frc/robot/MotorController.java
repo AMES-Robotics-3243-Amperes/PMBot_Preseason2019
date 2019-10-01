@@ -7,8 +7,18 @@
 
 package frc.robot;
 
+//I HAVE NO IDEA WHY THIS ISN'T ACCEPTING THE com and ctre LIBRARIES 10/1/19
+import edu.wpi.first.wpilibj.VictorSP;
+import com.ctre.phoenix.ILoopable;
+import com.ctre.poenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.*;
+
 /**
  * Add your docs here.
  */
 public class MotorController {
+
+    VictorSPX motorRT = new VictorSPX(0);
+    
 }
