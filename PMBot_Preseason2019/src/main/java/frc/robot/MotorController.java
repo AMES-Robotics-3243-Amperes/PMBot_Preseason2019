@@ -20,5 +20,17 @@ import com.ctre.phoenix.motorcontrol.can.*;
 public class MotorController {
 
     VictorSPX motorRT = new VictorSPX(0);
+    VictorSPX motorLT = new VictorSPX(1);
+    VictorSPX motorRB = new VictorSPX(2);
+    VictorSPX motorLB = new VictorSPX(3);
+
+    public void setDriver(double var[]){
+        //Driving straight. I could be wrong on this: 10/3/19
+        motorRT.set(ControlMode.PercentOutput,  var[0]);
+        motorLT.set(ControlMode.PercentOutput, -var[1]);
+        motorRB.set(ControlMode.PercentOutput,  var[0]);
+        motorLB.set(ControlMode.PercentOutput, -var[1]);
+
+    }
     
 }
