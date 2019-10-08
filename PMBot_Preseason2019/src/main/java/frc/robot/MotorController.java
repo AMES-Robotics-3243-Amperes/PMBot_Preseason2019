@@ -9,6 +9,7 @@ package frc.robot;
 
 //I HAVE NO IDEA WHY THIS ISN'T ACCEPTING THE com and ctre LIBRARIES 10/1/19
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.RobotDrive;
 import com.ctre.phoenix.ILoopable;
 import com.ctre.poenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -19,18 +20,12 @@ import com.ctre.phoenix.motorcontrol.can.*;
  */
 public class MotorController {
 
-    VictorSPX motorRT = new VictorSPX(0);
-    VictorSPX motorLT = new VictorSPX(1);
-    VictorSPX motorRB = new VictorSPX(2);
-    VictorSPX motorLB = new VictorSPX(3);
-
     public void setDriver(double var[]){
-        //Driving straight. I could be wrong on this: 10/3/19
-        motorRT.set(ControlMode.PercentOutput,  var[0]);
-        motorLT.set(ControlMode.PercentOutput, -var[1]);
-        motorRB.set(ControlMode.PercentOutput,  var[0]);
-        motorLB.set(ControlMode.PercentOutput, -var[1]);
-
+        VictorSP motorRT = new VictorSP(0);
+        VictorSP motorLT = new VictorSP(1);
+        VictorSP motorRB = new VictorSP(2);
+        VictorSP motorLB = new VictorSP(3);
+        
     }
     
 }
