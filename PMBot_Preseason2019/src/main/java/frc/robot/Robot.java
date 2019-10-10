@@ -26,6 +26,9 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  MotorController MC;
+  InputManager IM;
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -35,6 +38,9 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    MC = new MotorController();
+    IM = new InputManager();
   }
 
   /**
