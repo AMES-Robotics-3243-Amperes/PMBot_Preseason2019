@@ -9,7 +9,7 @@ package frc.robot;
 
 //I HAVE NO IDEA WHY THIS ISN'T ACCEPTING THE com and ctre LIBRARIES 10/1/19
 //Looks to be working 10/10/19
-import edu.wpi.first.wpilibj.VictorSP;
+//import edu.wpi.first.wpilibj.VictorSPX;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -36,11 +36,12 @@ public class MotorController {
     private double timeWhenLastFired = 0;
 
     public void setDriver(double var[]){
-        VictorSP motorRT = new VictorSP(0);
-        VictorSP motorLT = new VictorSP(1);
-        VictorSP motorRB = new VictorSP(2);
-        VictorSP motorLB = new VictorSP(3);
-        
+        VictorSPX motorRT = new VictorSPX(0);
+        VictorSPX motorLT = new VictorSPX(1);
+        VictorSPX motorRB = new VictorSPX(2);
+        VictorSPX motorLB = new VictorSPX(3);
+		
+		
     }
     
     public void fire()
@@ -59,5 +60,6 @@ public class MotorController {
     public void upkeep()
     {
         if(Timer.getFPGATimestamp() - timeWhenLastFired > RESET_DELAY_SECONDS)
+        ;
     }
 }
