@@ -8,10 +8,13 @@
 package frc.robot;
 
 //I HAVE NO IDEA WHY THIS ISN'T ACCEPTING THE com and ctre LIBRARIES 10/1/19
+//Looks to be working 10/10/19
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Solenoid;
 import com.ctre.phoenix.ILoopable;
-import com.ctre.poenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.*;
 
@@ -19,6 +22,10 @@ import com.ctre.phoenix.motorcontrol.can.*;
  * Add your docs here.
  */
 public class MotorController {
+
+    Compressor compressor = new Compressor(0);
+    Solenoid fireValve = new Solenoid(1);
+    Solenoid resetValve = new Solenoid(2);
 
     public void setDriver(double var[]){
         VictorSP motorRT = new VictorSP(0);
@@ -28,4 +35,8 @@ public class MotorController {
         
     }
     
+    public void fire()
+    {
+        fireValve.set(true);
+    }
 }

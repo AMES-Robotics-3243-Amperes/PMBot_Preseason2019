@@ -43,6 +43,9 @@ def includeDesktopSupport = false
 // Maven central needed for JUnit
 repositories {
     mavenCentral()
+ //   maven { // Phoenix suff 2019 Oct 10
+ //       url "http://devsite.ctr-electronics.com/maven/release"
+ //   }
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
@@ -50,6 +53,7 @@ repositories {
 dependencies {
     compile wpi.deps.wpilib()
     compile wpi.deps.vendor.java()
+  //  compile 'com.ctre:CTRE-Phoenix:5.14.1' // Phoenix suff 2019 Oct 10
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
     testCompile 'junit:junit:4.12'
