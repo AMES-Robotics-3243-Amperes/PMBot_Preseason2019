@@ -24,16 +24,43 @@ import com.ctre.phoenix.motorcontrol.can.*;
  * Add your docs here.
  */
 public class MotorController {
-    public static final double RESET_DELAY_SECONDS = 0.25d;
+    public static final double RESET_DELAY_SEC = 0.25d;
+    public static final double RETRACT_TIME_SEC = 0.25d;
 
+    /*
+    fireVent
+       |
+    V--+--fireValve---+
+    V                 +--Tank--Compressor
+    V--+--resetValve--+
+       |
+    resetVent
+    */
     Compressor compressor = new Compressor(0);
-    Solenoid fireValve = new Solenoid(1);
-    Solenoid resetValve = new Solenoid(2);
+    Solenoid fireValve = new Solenoid(1); // F
+    Solenoid fireVent = new Solenoid(2); // FV
+    Solenoid resetValve = new Solenoid(3); // R
+    Solenoid resetVent = new Solenoid(4); // RV
 
-    private boolean hasFired = false;
+    public enum FireState {
+        Primed,     // FV open
+        PreFire,    // RV open
+        Fire,        // F, RV open
+        Extended,    // RV open
+        PreRetract,  // FV open
+        Retract    // R, FV open
+    }
+    private FireState fireState = FireState.Primed;
     /** Returns true if the piston has been fired and cannot shoot until it retracts. Returns false otherwise. */
-    public boolean getHasFired() { return hasFired; }
-    private double timeWhenLastFired = 0;
+    public FireState getFireState() { return fireState; }
+    public void setFireState(FireState value) {
+        fireState = value;
+        timeAtLastStateChange = Timer.getFPGATimestamp();
+    }
+    private double timeAtLastStateChange = 0;
+    public double timeSinceStateChange() {
+        return Timer.getFPGATimestamp() - timeAtLastStateChange;
+    }
 
     public void setDriver(double var[]){
         VictorSPX motorRT = new VictorSPX(0);
@@ -46,20 +73,24 @@ public class MotorController {
     
     public void fire()
     {
-        if(hasFired)
+        if(fireState != FireState.Primed)
             return; // Can't fire before piston has been reset! TODO: give a warning message here?
 
         fireValve.set(true);
-        hasFired = true;
-        timeWhenLastFired = Timer.getFPGATimestamp();
+        resetValve.set(false);
+        setFireState(FireState.Firing);
     }
 
     /**
      * Called once each teleopPeriodic() step.
      */
-    public void upkeep()
+    public void teleopPeriodic()
     {
-        if(Timer.getFPGATimestamp() - timeWhenLastFired > RESET_DELAY_SECONDS)
-        ;
+        if(fireState==FireState.Firing && timeSinceStateChange() > RESET_DELAY_SEC)
+        {
+            fireValve.set(false);
+            resetValve.set(true);
+            setFireState(FireState.Firing);
+        }
     }
 }
