@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;    //Testing Mecanum code from another team on GitHub 10/22/19
 
 import com.ctre.phoenix.ILoopable;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -41,6 +42,10 @@ public class MotorController {
     Solenoid fireVent = new Solenoid(2); // FV
     Solenoid resetValve = new Solenoid(3); // R
     Solenoid resetVent = new Solenoid(4); // RV
+
+    private double x;   //Testing Mecanum code from another team on GitHub 10/22/19
+    private double y;   //Testing Mecanum code from another team on GitHub 10/22/19
+    private double z;   //Testing Mecanum code from another team on GitHub 10/22/19
 
     public enum FireState {
         Primed,     // FV open
@@ -92,5 +97,14 @@ public class MotorController {
             resetValve.set(true);
             setFireState(FireState.Firing);
         }
+    }
+    public void setX(double x){ //Testing Mecanum code from another team on GitHub 10/22/19
+        this.x = x;
+    }
+    public void setY(double y){ //Testing Mecanum code from another team on GitHub 10/22/19
+        this.y = y;
+    }
+    public void setZ(double z){ //Testing Mecanum code from another team on GitHub 10/22/19
+        this.z = z;
     }
 }
