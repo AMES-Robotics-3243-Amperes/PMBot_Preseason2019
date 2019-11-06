@@ -16,6 +16,9 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;    //Testing Mecanum code from another team on GitHub 10/22/19
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import com.ctre.phoenix.ILoopable;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -25,8 +28,12 @@ import com.ctre.phoenix.motorcontrol.can.*;
  * Add your docs here.
  */
 public class MotorController {
+    private CANSparkMax m_leadMotor;
+    private CANSparkMax m_followMotor;
     public static final double RESET_DELAY_SEC = 0.25d;
     public static final double RETRACT_TIME_SEC = 0.25d;
+    private static final int leadDeviceID = 1;
+    private static final int followDeviceID = 2;
 
     /*
     fireVent
@@ -68,12 +75,13 @@ public class MotorController {
     }
 
     public void setDriver(double var[]){
-        VictorSPX motorRT = new VictorSPX(0);
-        VictorSPX motorLT = new VictorSPX(1);
-        VictorSPX motorRB = new VictorSPX(2);
-        VictorSPX motorLB = new VictorSPX(3);
-		
-		
+       m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
+       m_followMotor = new CANSparkMax(followDeviceID, MotorType.kBrushless);
+        
+       m_leadMotor.restoreFactoryDefaults();
+       m_followMotor.restoreFactoryDefaults();
+       //m_followMotor.follow(m_leadMotor);
+       m_leadMotor.set(var[0]);
     }
     
     public void fire()
@@ -83,7 +91,7 @@ public class MotorController {
 
         fireValve.set(true);
         resetValve.set(false);
-        setFireState(FireState.Firing);
+        //setFireState(FireState.Firing);
     }
 
     /**
@@ -91,12 +99,12 @@ public class MotorController {
      */
     public void teleopPeriodic()
     {
-        if(fireState==FireState.Firing && timeSinceStateChange() > RESET_DELAY_SEC)
+        /*if(fireState==FireState.Firing && timeSinceStateChange() > RESET_DELAY_SEC)
         {
             fireValve.set(false);
             resetValve.set(true);
             setFireState(FireState.Firing);
-        }
+        }*/
     }
     public void setX(double x){ //Testing Mecanum code from another team on GitHub 10/22/19
         this.x = x;
@@ -107,4 +115,5 @@ public class MotorController {
     public void setZ(double z){ //Testing Mecanum code from another team on GitHub 10/22/19
         this.z = z;
     }
+
 }
