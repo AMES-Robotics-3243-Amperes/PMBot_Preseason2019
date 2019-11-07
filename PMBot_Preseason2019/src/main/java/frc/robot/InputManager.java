@@ -32,7 +32,7 @@ public class InputManager {
     {
         return new double[] {
             - processJoyst(inputOne.getRawAxis(1)),
-            - processJoyst(inputOne.getRawAxis(0))
+            - processJoyst(inputOne.getRawAxis(3))
             
         };
     }

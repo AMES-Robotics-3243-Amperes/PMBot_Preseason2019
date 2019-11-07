@@ -97,10 +97,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+<<<<<<< HEAD
     Joystick driveStick = new Joystick(1);
     if(IM.fireButton())
       MC.fire();
     MC.enabledPeriodic();
+=======
+    //Joystick driveStick = new Joystick(1);
+    MC.setDriver(IM.throttles());
+>>>>>>> 027c12791429ab2c48de66350172a35a842e9371
   }
 
   /**
