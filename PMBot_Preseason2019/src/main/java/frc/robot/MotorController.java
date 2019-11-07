@@ -50,7 +50,10 @@ public class MotorController {
     Solenoid resetValve = new Solenoid(3); // R
     Solenoid resetVent = new Solenoid(4); // RV
 
-<<<<<<< HEAD
+    private double x;   //Testing Mecanum code from another team on GitHub 10/22/19
+    private double y;   //Testing Mecanum code from another team on GitHub 10/22/19
+    private double z;   //Testing Mecanum code from another team on GitHub 10/22/19
+    
     private class PMState{
         float stateTime;
         boolean fireValve;
@@ -65,19 +68,6 @@ public class MotorController {
             resetValve = r;
             resetVent = rv;
         }
-=======
-    private double x;   //Testing Mecanum code from another team on GitHub 10/22/19
-    private double y;   //Testing Mecanum code from another team on GitHub 10/22/19
-    private double z;   //Testing Mecanum code from another team on GitHub 10/22/19
-
-    public enum FireState {
-        Primed,     // FV open
-        PreFire,    // RV open
-        Fire,        // F, RV open
-        Extended,    // RV open
-        PreRetract,  // FV open
-        Retract    // R, FV open
->>>>>>> 027c12791429ab2c48de66350172a35a842e9371
     }
     // Pneumatics: false=closed, true=open
     private final PMState pmStandby = new PMState(100, false, false, true, false); // The default state, when not in a firing cycle.
@@ -115,15 +105,9 @@ public class MotorController {
         if(fireState != pmStandby)
             return; // Can't fire before piston has been reset! TODO: give a warning message here?
 
-<<<<<<< HEAD
         // Start the firing sequence by moving off of pmStandby:
         pmSeqIdx = 0;
         setFireState(pmFireSequence[pmSeqIdx]);
-=======
-        fireValve.set(true);
-        resetValve.set(false);
-        //setFireState(FireState.Firing);
->>>>>>> 027c12791429ab2c48de66350172a35a842e9371
     }
 
     /**
@@ -131,7 +115,6 @@ public class MotorController {
      */
     public void enabledPeriodic()
     {
-<<<<<<< HEAD
         // In in a fire cycle, set solenoids to appropriate states and check for moving to the next step
         if(fireState != pmStandby)
         {
@@ -149,17 +132,10 @@ public class MotorController {
                     setFireState(pmStandby);
             }
         }
-=======
-        /*if(fireState==FireState.Firing && timeSinceStateChange() > RESET_DELAY_SEC)
-        {
-            fireValve.set(false);
-            resetValve.set(true);
-            setFireState(FireState.Firing);
-        }*/
     }
+
     public void setX(double x){ //Testing Mecanum code from another team on GitHub 10/22/19
         this.x = x;
->>>>>>> 027c12791429ab2c48de66350172a35a842e9371
     }
     public void setY(double y){ //Testing Mecanum code from another team on GitHub 10/22/19
         this.y = y;
