@@ -79,6 +79,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    MC.enabledPeriodic();
+
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
@@ -95,6 +97,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    Joystick driveStick = new Joystick(1);
+    if(IM.fireButton())
+      MC.fire();
+    MC.enabledPeriodic();
     //Joystick driveStick = new Joystick(1);
     MC.setDriver(IM.throttles());
   }

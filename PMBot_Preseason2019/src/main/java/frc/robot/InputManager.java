@@ -37,4 +37,12 @@ public class InputManager {
         };
     }
 
+    public boolean fireButton()
+    {
+        return inputOne.getRawButton(5)
+            || inputOne.getRawButton(6)
+            || inputOne.getRawButton(7)
+            || inputOne.getRawButton(8);
+        // ANY bumper or trigger
+    }
 }

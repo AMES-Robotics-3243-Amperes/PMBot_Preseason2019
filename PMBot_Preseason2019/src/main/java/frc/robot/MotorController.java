@@ -58,25 +58,40 @@ public class MotorController {
     private double x;   //Testing Mecanum code from another team on GitHub 10/22/19
     private double y;   //Testing Mecanum code from another team on GitHub 10/22/19
     private double z;   //Testing Mecanum code from another team on GitHub 10/22/19
-
     public MotorController()
     {
         driveR2.follow(driveR1);
         driveL2.follow(driveL1);
     }
 
-    public enum FireState {
-        Primed,     // FV open
-        PreFire,    // RV open
-        Fire,        // F, RV open
-        Extended,    // RV open
-        PreRetract,  // FV open
-        Retract    // R, FV open
+    private class PMState{
+        float stateTime;
+        boolean fireValve;
+        boolean fireVent;
+        boolean resetValve;
+        boolean resetVent;
+        public PMState(float stateTime, boolean f, boolean fv, boolean r, boolean rv)
+        {
+            this.stateTime = stateTime;
+            fireValve = f;
+            fireVent = fv;
+            resetValve = r;
+            resetVent = rv;
+        }
     }
-    private FireState fireState = FireState.Primed;
+    // Pneumatics: false=closed, true=open
+    private final PMState pmStandby = new PMState(100, false, false, true, false); // The default state, when not in a firing cycle.
+    private int pmSeqIdx = 0; // Index in pmFireSequence that I'm currently on
+    private final PMState[] pmFireSequence = {
+        new PMState(0.25f, true, false, false, true), // Fire
+        new PMState(0.1f, false, false, false, false), // pre Reset
+        new PMState(0.25f, false, true, true, false), // Reset
+        new PMState(0.1f, false, false, false, false) // pre Standby
+    };
+    private PMState fireState = pmStandby; // Always use setFireState() to change this!
     /** Returns true if the piston has been fired and cannot shoot until it retracts. Returns false otherwise. */
-    public FireState getFireState() { return fireState; }
-    public void setFireState(FireState value) {
+    //public PMState getFireState() { return fireState; }
+    public void setFireState(PMState value) {
         fireState = value;
         timeAtLastStateChange = Timer.getFPGATimestamp();
     }
@@ -98,26 +113,38 @@ public class MotorController {
     
     public void fire()
     {
-        if(fireState != FireState.Primed)
+        if(fireState != pmStandby)
             return; // Can't fire before piston has been reset! TODO: give a warning message here?
 
-        fireValve.set(true);
-        resetValve.set(false);
-        //setFireState(FireState.Firing);
+        // Start the firing sequence by moving off of pmStandby:
+        pmSeqIdx = 0;
+        setFireState(pmFireSequence[pmSeqIdx]);
     }
 
     /**
-     * Called once each teleopPeriodic() step.
+     * Called once each autonomousPeriodic() and teleopPeriodic() step by Robot.java.
      */
-    public void teleopPeriodic()
+    public void enabledPeriodic()
     {
-        /*if(fireState==FireState.Firing && timeSinceStateChange() > RESET_DELAY_SEC)
+        // In in a fire cycle, set solenoids to appropriate states and check for moving to the next step
+        if(fireState != pmStandby)
         {
-            fireValve.set(false);
-            resetValve.set(true);
-            setFireState(FireState.Firing);
-        }*/
+            fireValve.set(fireState.fireValve);
+            fireVent.set(fireState.fireVent);
+            resetValve.set(fireState.resetValve);
+            resetVent.set(fireState.resetVent);
+
+            if(timeSinceStateChange() > fireState.stateTime) // Time to move to the next step?
+            {
+                pmSeqIdx++;
+                if(pmSeqIdx < pmFireSequence.length)
+                    setFireState(pmFireSequence[pmSeqIdx]);
+                else
+                    setFireState(pmStandby);
+            }
+        }
     }
+
     public void setX(double x){ //Testing Mecanum code from another team on GitHub 10/22/19
         this.x = x;
     }
