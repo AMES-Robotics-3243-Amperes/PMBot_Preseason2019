@@ -29,8 +29,7 @@ import com.ctre.phoenix.motorcontrol.can.*;
  */
 public class MotorController {
     // 2019 Nov 7: VSCode intermittently stops recognizing Spark libraries
-    private CANSparkMax m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
-    private CANSparkMax m_followMotor = new CANSparkMax(followDeviceID, MotorType.kBrushless);
+
     private VictorSPX driveR1 = new VictorSPX(3); // Right is 3 4
     private VictorSPX driveR2 = new VictorSPX(4);
     private VictorSPX driveL1 = new VictorSPX(1); // Left is 1 2
@@ -39,6 +38,10 @@ public class MotorController {
     public static final double RETRACT_TIME_SEC = 0.25d;
     private static final int leadDeviceID = 1;
     private static final int followDeviceID = 2;
+    private CANSparkMax m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
+    private CANSparkMax m_followMotor = new CANSparkMax(followDeviceID, MotorType.kBrushless);
+
+    //private MecanumDrive robotDrive = new MecanumDrive(driveL1, driveL2, driveR1, driveR2);
 
     /*
     fireVent
@@ -100,15 +103,13 @@ public class MotorController {
         return Timer.getFPGATimestamp() - timeAtLastStateChange;
     }
 
-    public void setDriver(double var[]){
-       m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleopbegin or whatever
-       m_followMotor.restoreFactoryDefaults();
-       m_followMotor.follow(m_leadMotor);
-
-       m_leadMotor.set(var[0]);
-
-        driveR1.set(ControlMode.Velocity, var[0]);
-        driveL1.set(ControlMode.Velocity, var[1]);
+    public void setMax(double var[]){
+       m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
+       //m_followMotor.restoreFactoryDefaults();
+       
+       //m_followMotor.follow(m_leadMotor);
+       m_leadMotor.set(var[1]);
+       
     }
     
     public void fire()
