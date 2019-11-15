@@ -52,7 +52,6 @@ public class MotorController {
        |
     resetVent
     */
-    Compressor compressor = new Compressor(0);
     Solenoid fireValve = new Solenoid(1); // F
     Solenoid fireVent = new Solenoid(2); // FV
     Solenoid resetValve = new Solenoid(3); // R
