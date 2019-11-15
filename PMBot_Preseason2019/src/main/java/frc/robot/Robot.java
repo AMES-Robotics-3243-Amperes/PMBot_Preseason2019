@@ -103,6 +103,7 @@ public class Robot extends TimedRobot {
     MC.enabledPeriodic();
     //Joystick driveStick = new Joystick(1);
     MC.setMax(IM.throttles()); //SparkMAX motor controller
+    MC.setDriver(IM.throttles()); //Mecanum Wheels
   }
 
   /**
