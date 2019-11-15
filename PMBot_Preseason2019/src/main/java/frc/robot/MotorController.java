@@ -54,7 +54,7 @@ public class MotorController {
     private double y;   //Testing Mecanum code from another team on GitHub 10/22/19
     private double z;   //Testing Mecanum code from another team on GitHub 10/22/19
     
-    private class PMState{
+    private static class PMState{
         float stateTime;
         boolean fireValve;
         boolean fireVent;
