@@ -28,12 +28,20 @@ import com.ctre.phoenix.motorcontrol.can.*;
  * Add your docs here.
  */
 public class MotorController {
-    private CANSparkMax m_leadMotor;
-    private CANSparkMax m_followMotor;
+    // 2019 Nov 7: VSCode intermittently stops recognizing Spark libraries
+
+    private VictorSPX driveR1 = new VictorSPX(3); // Right is 3 4
+    private VictorSPX driveR2 = new VictorSPX(4);
+    private VictorSPX driveL1 = new VictorSPX(1); // Left is 1 2
+    private VictorSPX driveL2 = new VictorSPX(2);
     public static final double RESET_DELAY_SEC = 0.25d;
     public static final double RETRACT_TIME_SEC = 0.25d;
     private static final int leadDeviceID = 1;
     private static final int followDeviceID = 2;
+    private CANSparkMax m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
+    private CANSparkMax m_followMotor = new CANSparkMax(followDeviceID, MotorType.kBrushless);
+
+    //private MecanumDrive robotDrive = new MecanumDrive(driveL1, driveL2, driveR1, driveR2);
 
     /*
     fireVent
@@ -44,7 +52,6 @@ public class MotorController {
        |
     resetVent
     */
-    Compressor compressor = new Compressor(0);
     Solenoid fireValve = new Solenoid(1); // F
     Solenoid fireVent = new Solenoid(2); // FV
     Solenoid resetValve = new Solenoid(3); // R
@@ -54,6 +61,12 @@ public class MotorController {
     private double y;   //Testing Mecanum code from another team on GitHub 10/22/19
     private double z;   //Testing Mecanum code from another team on GitHub 10/22/19
     
+    public MotorController()
+    {
+        driveR2.follow(driveR1);
+        driveL2.follow(driveL1);
+    }
+
     private static class PMState{
         float stateTime;
         boolean fireValve;
@@ -90,14 +103,13 @@ public class MotorController {
         return Timer.getFPGATimestamp() - timeAtLastStateChange;
     }
 
-    public void setDriver(double var[]){
-       m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
-       m_followMotor = new CANSparkMax(followDeviceID, MotorType.kBrushless);
-        
-       m_leadMotor.restoreFactoryDefaults();
-       m_followMotor.restoreFactoryDefaults();
+    public void setMax(double var[]){
+       m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
+       //m_followMotor.restoreFactoryDefaults();
+       
        //m_followMotor.follow(m_leadMotor);
-       m_leadMotor.set(var[0]);
+       m_leadMotor.set(var[1]);
+       
     }
     
     public void fire()

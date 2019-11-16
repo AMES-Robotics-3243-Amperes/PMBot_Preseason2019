@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.Joystick;
 public class InputManager {
     
     Joystick inputOne = new Joystick(0);
-    private static final double JOY_CURVE_EXP = 2;
+    private static final double JOY_CURVE_EXP = 3;    //when the exponent is 2, the negative goes away
     private static final double JOY_DEAD_THRESHOLD = 0.1d;
 
     /**
