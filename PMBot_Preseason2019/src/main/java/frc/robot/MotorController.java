@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;    //Testing Mecanum code from another team on GitHub 10/22/19
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -90,7 +91,45 @@ public class MotorController {
 
     public void setSparkTest() // Call duting Robot.teleopPeriodic()
     {
-        leadPIDController.setReference(10, ControlType.kPosition);
+        // read PID coefficients from SmartDashboard
+        double p = SmartDashboard.getNumber("P Gain", 0);
+        double i = SmartDashboard.getNumber("I Gain", 0);
+        double d = SmartDashboard.getNumber("D Gain", 0);
+        double iz = SmartDashboard.getNumber("I Zone", 0);
+        double ff = SmartDashboard.getNumber("Feed Forward", 0);
+        double max = SmartDashboard.getNumber("Max Output", 0);
+        double min = SmartDashboard.getNumber("Min Output", 0);
+        double rotations = SmartDashboard.getNumber("Set Rotations", 0);
+
+        // if PID coefficients on SmartDashboard have changed, write new values to controller
+        if((p != kP)) { leadPIDController.setP(p); kP = p; }
+        if((i != kI)) { leadPIDController.setI(i); kI = i; }
+        if((d != kD)) { leadPIDController.setD(d); kD = d; }
+        if((iz != kIz)) { leadPIDController.setIZone(iz); kIz = iz; }
+        if((ff != kFF)) { leadPIDController.setFF(ff); kFF = ff; }
+        if((max != kMaxOutput) || (min != kMinOutput)) { 
+            leadPIDController.setOutputRange(min, max); 
+            kMinOutput = min; kMaxOutput = max; 
+        }
+
+        /**
+         * PIDController objects are commanded to a set point using the 
+         * SetReference() method.
+         * 
+         * The first parameter is the value of the set point, whose units vary
+         * depending on the control type set in the second parameter.
+         * 
+         * The second parameter is the control type can be set to one of four 
+         * parameters:
+         *  com.revrobotics.ControlType.kDutyCycle
+         *  com.revrobotics.ControlType.kPosition
+         *  com.revrobotics.ControlType.kVelocity
+         *  com.revrobotics.ControlType.kVoltage
+         */
+        leadPIDController.setReference(rotations, ControlType.kPosition);
+        
+        SmartDashboard.putNumber("SetPoint", rotations);
+        //SmartDashboard.putNumber("ProcessVariable", m_encoder.getPosition());
     }
 
     //   --------------------   BEGIN PNEUMATICS CODE   --------------------
