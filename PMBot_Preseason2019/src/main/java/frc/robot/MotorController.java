@@ -108,8 +108,12 @@ public class MotorController {
        //m_followMotor.restoreFactoryDefaults();
        
        //m_followMotor.follow(m_leadMotor);
-       m_leadMotor.set(var[1]);
+       m_leadMotor.set(var[0]);
        
+    }
+    
+    public void setDriver(double var[]){    //Mecanum Wheels
+
     }
     
     public void fire()
