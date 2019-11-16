@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;    //Testing Mecanum code from another team on GitHub 10/22/19
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -40,7 +41,10 @@ public class MotorController {
     private static final int followDeviceID = 2;
     private CANSparkMax m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
     private CANSparkMax m_followMotor = new CANSparkMax(followDeviceID, MotorType.kBrushless);
+    private CANEncoder m_encoder;
 
+    m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
+    m_followMotor.restoreFactoryDefaults();
     //private MecanumDrive robotDrive = new MecanumDrive(driveL1, driveL2, driveR1, driveR2);
 
     /*
@@ -102,13 +106,11 @@ public class MotorController {
         return Timer.getFPGATimestamp() - timeAtLastStateChange;
     }
 
-    public void setMax(double var[]){
-       m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
-       //m_followMotor.restoreFactoryDefaults();
-       
-       //m_followMotor.follow(m_leadMotor);
+    public double setMax(double var[]){
        m_leadMotor.set(var[0]);
-       
+       m_encoder = m_leadMotor.getEncoder();
+       SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());
+       SmartDashboard.putNumber("Encoder Velocity", m_encoder.getVelocity());
     }
     
     public void setDriver(double var[]){    //Mecanum Wheels
