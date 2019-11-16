@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;    //Testing Mecanum code from another team on GitHub 10/22/19
 
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import com.ctre.phoenix.ILoopable;
@@ -40,6 +42,8 @@ public class MotorController {
     private static final int followDeviceID = 2;
     private CANSparkMax m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
     private CANSparkMax m_followMotor = new CANSparkMax(followDeviceID, MotorType.kBrushless);
+    private CANPIDController leadPIDController;
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput; // PID coefficients
 
     //private MecanumDrive robotDrive = new MecanumDrive(driveL1, driveL2, driveR1, driveR2);
 
@@ -61,12 +65,35 @@ public class MotorController {
     private double y;   //Testing Mecanum code from another team on GitHub 10/22/19
     private double z;   //Testing Mecanum code from another team on GitHub 10/22/19
     
-    public MotorController()
+    public MotorController() // Constructed in Robot.robotInit()
     {
+        leadPIDController = m_leadMotor.getPIDController();
+        // PID coefficients
+        kP = 0.1; 
+        kI = 1e-4;
+        kD = 1; 
+        kIz = 0; 
+        kFF = 0; 
+        kMaxOutput = 1; 
+        kMinOutput = -1;
+        // set PID coefficients
+        leadPIDController.setP(kP);
+        leadPIDController.setI(kI);
+        leadPIDController.setD(kD);
+        leadPIDController.setIZone(kIz);
+        leadPIDController.setFF(kFF);
+        leadPIDController.setOutputRange(kMinOutput, kMaxOutput);
+
         driveR2.follow(driveR1);
         driveL2.follow(driveL1);
     }
 
+    public void setSparkTest() // Call duting Robot.teleopPeriodic()
+    {
+        leadPIDController.setReference(10, ControlType.kPosition);
+    }
+
+    //   --------------------   BEGIN PNEUMATICS CODE   --------------------
     private static class PMState{
         float stateTime;
         boolean fireValve;

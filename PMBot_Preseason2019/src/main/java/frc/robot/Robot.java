@@ -104,6 +104,8 @@ public class Robot extends TimedRobot {
     //Joystick driveStick = new Joystick(1);
     MC.setMax(IM.throttles()); //SparkMAX motor controller
     MC.setDriver(IM.throttles()); //Mecanum Wheels
+
+    MC.setSparkTest(); // Test for Spark-Max closed-loop control
   }
 
   /**
