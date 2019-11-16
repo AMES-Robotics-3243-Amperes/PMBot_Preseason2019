@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import com.ctre.phoenix.ILoopable;
@@ -47,8 +48,7 @@ public class MotorController {
     private CANPIDController leadPIDController;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput; // PID coefficients
 
-    m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
-    m_followMotor.restoreFactoryDefaults();
+    
     //private MecanumDrive robotDrive = new MecanumDrive(driveL1, driveL2, driveR1, driveR2);
 
     /*
@@ -90,11 +90,15 @@ public class MotorController {
 
         driveR2.follow(driveR1);
         driveL2.follow(driveL1);
+
+        m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
+        m_followMotor.restoreFactoryDefaults();
     }
 
     public void setSparkTest() // Call duting Robot.teleopPeriodic()
     {
-        leadPIDController.setReference(10, ControlType.kPosition);
+        leadPIDController.setReference(Timer.getFPGATimestamp(), ControlType.kPosition);
+        System.out.println(Timer.getFPGATimestamp());
     }
 
     //   --------------------   BEGIN PNEUMATICS CODE   --------------------
@@ -134,11 +138,15 @@ public class MotorController {
         return Timer.getFPGATimestamp() - timeAtLastStateChange;
     }
 
-    public double setMax(double var[]){
-       m_leadMotor.set(var[0]);
-       m_encoder = m_leadMotor.getEncoder();
-       SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());
-       SmartDashboard.putNumber("Encoder Velocity", m_encoder.getVelocity());
+    public void setMax(double var[]){
+        m_encoder = m_leadMotor.getEncoder();
+
+        m_leadMotor.set(var[0]);
+        leadPIDController.setReference(var[0], ControlType.kVelocity);
+        System.out.println(Timer.getFPGATimestamp());
+        SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());
+
+       //SmartDashboard.putNumber("Encoder Velocity", m_encoder.getVelocity());
     }
     
     public void setDriver(double var[]){    //Mecanum Wheels
