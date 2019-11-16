@@ -27,7 +27,8 @@ public class InputManager {
     private double processJoyst(double rawValue)
     {
         //return Math.pow((rawValue-JOY_DEAD_THRESHOLD) / (1-JOY_DEAD_THRESHOLD), JOY_CURVE_EXP);   //Got rid, because Tanh curve has an asymptote at 1 or 100% speed
-        return Math.tanh(kDrive*rawValue);    //Testing tanh curve
+        //return Math.tanh(kDrive*rawValue);    //Testing tanh curve
+        return rawValue;
     }
 
     public double[] throttles()

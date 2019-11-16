@@ -43,7 +43,6 @@ public class MotorController {
     private static final int leadDeviceID = 1;
     private static final int followDeviceID = 2;
     private CANSparkMax m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
-    private CANSparkMax m_followMotor = new CANSparkMax(followDeviceID, MotorType.kBrushless);
     private CANEncoder m_encoder;
     private CANPIDController leadPIDController;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput; // PID coefficients
@@ -101,7 +100,6 @@ public class MotorController {
         driveL2.follow(driveL1);
 
         m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
-        m_followMotor.restoreFactoryDefaults();
     }
 
     public void setSparkTest() // Call duting Robot.teleopPeriodic()
@@ -187,7 +185,7 @@ public class MotorController {
     public void setMax(double var[]){
         m_encoder = m_leadMotor.getEncoder();
 
-        m_leadMotor.set(var[0]);
+        //m_leadMotor.set(var[0]);
         leadPIDController.setReference(var[0], ControlType.kVelocity);
         System.out.println(Timer.getFPGATimestamp());
         SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());
