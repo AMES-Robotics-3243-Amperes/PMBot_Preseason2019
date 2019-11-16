@@ -87,6 +87,15 @@ public class MotorController {
         leadPIDController.setIZone(kIz);
         leadPIDController.setFF(kFF);
         leadPIDController.setOutputRange(kMinOutput, kMaxOutput);
+    // display PID coefficients on SmartDashboard
+    SmartDashboard.putNumber("P Gain", kP);
+    SmartDashboard.putNumber("I Gain", kI);
+    SmartDashboard.putNumber("D Gain", kD);
+    SmartDashboard.putNumber("I Zone", kIz);
+    SmartDashboard.putNumber("Feed Forward", kFF);
+    SmartDashboard.putNumber("Max Output", kMaxOutput);
+    SmartDashboard.putNumber("Min Output", kMinOutput);
+    SmartDashboard.putNumber("Set Rotations", 0);
 
         driveR2.follow(driveR1);
         driveL2.follow(driveL1);
