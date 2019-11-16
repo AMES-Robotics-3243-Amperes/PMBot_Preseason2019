@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import com.ctre.phoenix.ILoopable;
@@ -43,9 +44,11 @@ public class MotorController {
     private static final int followDeviceID = 2;
     private CANSparkMax m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
     private CANSparkMax m_followMotor = new CANSparkMax(followDeviceID, MotorType.kBrushless);
+    private CANEncoder m_encoder;
     private CANPIDController leadPIDController;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput; // PID coefficients
 
+    
     //private MecanumDrive robotDrive = new MecanumDrive(driveL1, driveL2, driveR1, driveR2);
 
     /*
@@ -87,6 +90,9 @@ public class MotorController {
 
         driveR2.follow(driveR1);
         driveL2.follow(driveL1);
+
+        m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
+        m_followMotor.restoreFactoryDefaults();
     }
 
     public void setSparkTest() // Call duting Robot.teleopPeriodic()
@@ -170,12 +176,14 @@ public class MotorController {
     }
 
     public void setMax(double var[]){
-       m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
-       //m_followMotor.restoreFactoryDefaults();
-       
-       //m_followMotor.follow(m_leadMotor);
-       m_leadMotor.set(var[0]);
-       
+        m_encoder = m_leadMotor.getEncoder();
+
+        m_leadMotor.set(var[0]);
+        leadPIDController.setReference(var[0], ControlType.kVelocity);
+        System.out.println(Timer.getFPGATimestamp());
+        SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());
+
+       //SmartDashboard.putNumber("Encoder Velocity", m_encoder.getVelocity());
     }
     
     public void setDriver(double var[]){    //Mecanum Wheels
