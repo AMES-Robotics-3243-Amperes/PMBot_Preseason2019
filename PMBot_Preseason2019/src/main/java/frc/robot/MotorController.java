@@ -44,8 +44,9 @@ public class MotorController {
     private static final int followDeviceID = 2;
     private CANSparkMax m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
     private CANEncoder m_encoder;
+    private static final double kEnd = 0.0d;
     private CANPIDController leadPIDController;
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput; // PID coefficients
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM; // PID coefficients
 
     
     //private MecanumDrive robotDrive = new MecanumDrive(driveL1, driveL2, driveR1, driveR2);
@@ -79,6 +80,7 @@ public class MotorController {
         kFF = 0; 
         kMaxOutput = 1; 
         kMinOutput = -1;
+        maxRPM = 5700;
         // set PID coefficients
         leadPIDController.setP(kP);
         leadPIDController.setI(kI);
@@ -102,7 +104,7 @@ public class MotorController {
         m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
     }
 
-    public void setSparkTest() // Call duting Robot.teleopPeriodic()
+    public void setSparkTest(double var[]) // Call duting Robot.teleopPeriodic()
     {
         // read PID coefficients from SmartDashboard
         double p = SmartDashboard.getNumber("P Gain", 0);
@@ -139,10 +141,11 @@ public class MotorController {
          *  com.revrobotics.ControlType.kVelocity
          *  com.revrobotics.ControlType.kVoltage
          */
-        leadPIDController.setReference(rotations, ControlType.kPosition);
+        rotations = var[0]*maxRPM;
+        leadPIDController.setReference(rotations, ControlType.kVelocity);
         
         SmartDashboard.putNumber("SetPoint", rotations);
-        //SmartDashboard.putNumber("ProcessVariable", m_encoder.getPosition());
+        SmartDashboard.putNumber("ProcessVariable", m_encoder.getVelocity());
     }
 
     //   --------------------   BEGIN PNEUMATICS CODE   --------------------
@@ -182,15 +185,23 @@ public class MotorController {
         return Timer.getFPGATimestamp() - timeAtLastStateChange;
     }
 
-    public void setMax(double var[]){
+    public void setMax(double var[], boolean moveRotate){
         m_encoder = m_leadMotor.getEncoder();
 
-        //m_leadMotor.set(var[0]);
-        leadPIDController.setReference(var[0], ControlType.kVelocity);
+        m_leadMotor.set(var[0]);
         System.out.println(Timer.getFPGATimestamp());
-        SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());
+        SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());  //Shows the position of the motorcontroller
+        SmartDashboard.putNumber("Encoder Velocity", m_encoder.getVelocity());  //Shows the velocity of the motorcontroller
+        
+        //Start encoder-based moving
+        if(moveRotate = true){
+            
+        }
+        //Since RevRobotics doesn't have a Encoder resetting function, I'm trying to make one here...?
+        if(var[0] == kEnd){ 
+            SmartDashboard.getNumber("Encoder Position", 0);
 
-       //SmartDashboard.putNumber("Encoder Velocity", m_encoder.getVelocity());
+        }
     }
     
     public void setDriver(double var[]){    //Mecanum Wheels
