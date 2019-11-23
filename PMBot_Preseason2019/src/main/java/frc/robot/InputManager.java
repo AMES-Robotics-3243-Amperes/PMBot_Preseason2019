@@ -26,6 +26,9 @@ public class InputManager {
      */
     private double processJoyst(double rawValue)
     {
+        if(-0.08 <= rawValue && rawValue <= 0.08){  //Deadzone of the joystick so if we slightly move it, it won't move the motors
+            rawValue = 0.0;
+        }
         //return Math.pow((rawValue-JOY_DEAD_THRESHOLD) / (1-JOY_DEAD_THRESHOLD), JOY_CURVE_EXP);   //Got rid, because Tanh curve has an asymptote at 1 or 100% speed
         return Math.tanh(rawValue);    //Testing tanh curve
         //return rawValue;
@@ -35,9 +38,10 @@ public class InputManager {
     {
         return new double[] {
             - processJoyst(inputOne.getRawAxis(1)), //double[0]
-            - processJoyst(inputOne.getRawAxis(3)) //double[1]
-         //   - processJoyst(inputOne.getRawAxis(2))  //double[2]
-            
+            - processJoyst(inputOne.getRawAxis(0)), //double[1]
+            - processJoyst(inputOne.getRawAxis(3)) //double[2]
+         //   - processJoyst(inputOne.getRawAxis(2))  //double[3]
+            //double[0] = ySpeed double[1] = xSpeed double[2] = zRotation *for Mecanum Wheels*
         };
     }
 

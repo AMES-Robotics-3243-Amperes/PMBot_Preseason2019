@@ -7,9 +7,12 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -20,12 +23,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
+
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  
 
+  MecanumDrive mecDrive;
   MotorController MC;
   InputManager IM;
 
@@ -39,8 +45,14 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
+    VictorSPX driveR1 = new VictorSPX(3); // Right is 3 4
+    VictorSPX driveR2 = new VictorSPX(4);
+    VictorSPX driveL1 = new VictorSPX(1); // Left is 1 2
+    VictorSPX driveL2 = new VictorSPX(2);
+
     MC = new MotorController();
     IM = new InputManager();
+    MecanumDrive mecDrive;  //Trying mecanum stuff 11/23/19
   }
 
   /**
@@ -97,14 +109,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    Joystick driveStick = new Joystick(1);
+    Joystick driveStick = new Joystick(0);
     if(IM.fireButton())
       MC.fire();
     MC.enabledPeriodic();
-    //Joystick driveStick = new Joystick(1);
-    MC.setMax(IM.throttles(), IM.encoderMax()); //SparkMAX motor controller
-    //MC.setDriver(IM.throttles()); //Mecanum Wheels
-
+    
+    //MC.setMax(IM.throttles(), IM.encoderMax()); //SparkMAX motor controller
+    
+    mecDrive.driveCartesian(driveStick.getRawAxis(1), driveStick.getRawAxis(0), driveStick.getRawAxis(3));  //Trying mecanum stuff 11/23/19
+    
     //MC.setSparkTest(); // Test for Spark-Max closed-loop control
   }
 
