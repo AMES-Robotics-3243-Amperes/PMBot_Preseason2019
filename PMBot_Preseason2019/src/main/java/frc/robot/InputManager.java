@@ -45,8 +45,11 @@ public class InputManager {
         };
     }
 
-    public boolean encoderMax(){
-        return inputOne.getRawButton(1);
+    public boolean[] encoderMax(){
+        return new boolean[]{
+            inputOne.getRawButton(1),
+            inputOne.getRawButton(2)
+        };
     }
 
     public boolean fireButton()

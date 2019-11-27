@@ -34,16 +34,11 @@ import com.ctre.phoenix.motorcontrol.can.*;
 public class MotorController {
     // 2019 Nov 7: VSCode intermittently stops recognizing Spark libraries
 
-    private VictorSPX driveR1 = new VictorSPX(3); // Right is 3 4
-    private VictorSPX driveR2 = new VictorSPX(4);
-    private VictorSPX driveL1 = new VictorSPX(1); // Left is 1 2
-    private VictorSPX driveL2 = new VictorSPX(2);
     public static final double RESET_DELAY_SEC = 0.25d;
     public static final double RETRACT_TIME_SEC = 0.25d;
     private static final int leadDeviceID = 1;
     private CANSparkMax m_leadMotor = new CANSparkMax(leadDeviceID, MotorType.kBrushless);
     private CANEncoder m_encoder;
-    private static final double kEnd = 0.0d;
     private CANPIDController leadPIDController;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM; // PID coefficients
 
@@ -97,8 +92,6 @@ public class MotorController {
     SmartDashboard.putNumber("Min Output", kMinOutput);
     SmartDashboard.putNumber("Set Rotations", 0);
 
-        driveR2.follow(driveR1);
-        driveL2.follow(driveL1);
 
         m_leadMotor.restoreFactoryDefaults(); // TODO: run these on teleop begin or whatever
     }
@@ -184,68 +177,81 @@ public class MotorController {
         return Timer.getFPGATimestamp() - timeAtLastStateChange;
     }
 
-    public void setMax(double var[], boolean moveRotate){
+    public void setMax(double var[], boolean[] setDist){
         long startTime = System.currentTimeMillis();
         m_encoder = m_leadMotor.getEncoder();
 
         SmartDashboard.putNumber("Encoder Position", m_encoder.getPosition());  //Shows the position of the motorcontroller
         SmartDashboard.putNumber("Encoder Velocity", m_encoder.getVelocity());  //Shows the velocity of the motorcontroller
-        SmartDashboard.putBoolean("Encoder?", moveRotate);
+        SmartDashboard.putBoolean("Encoder?", setDist[0]);
         //Start encoder-based moving
         
         long timeNow = System.currentTimeMillis();
         timeNow = timeNow - startTime;
         System.out.println(timeNow);
 
-        if(moveRotate && timeNow <= 5000){
+        if(setDist[0] && !setDist[1] && timeNow <= 5000){
 
-            if(moveRotate && m_encoder.getPosition() < 9){
+            if(setDist[0] && !setDist[1] && m_encoder.getPosition() < 9){
                 m_leadMotor.set(0.15);
 
-            } if(moveRotate && 9 < m_encoder.getPosition() && m_encoder.getPosition() < 9.5){
+            } if(setDist[0] && !setDist[1] && 9 < m_encoder.getPosition() && m_encoder.getPosition() < 9.5){
                 m_leadMotor.set(0.05);
 
-            } if(moveRotate && 9.95 < m_encoder.getPosition() && m_encoder.getPosition() < 10){
+            } if(setDist[0] && !setDist[1] && 9.95 < m_encoder.getPosition() && m_encoder.getPosition() < 10){
                 m_leadMotor.set(0.025);
 
-            } if(moveRotate && 9.5 < m_encoder.getPosition() && m_encoder.getPosition() < 9.95){
+            } if(setDist[0] && !setDist[1] && 9.5 < m_encoder.getPosition() && m_encoder.getPosition() < 9.95){
                 m_leadMotor.set(0.005);
 
             }
             
-            if(moveRotate && 10 < m_encoder.getPosition() && m_encoder.getPosition() < 10.09){
+            if(setDist[0] && !setDist[1] && 10 < m_encoder.getPosition() && m_encoder.getPosition() < 10.09){
                 m_leadMotor.set(-0.005);
 
-            } if(moveRotate && 10.09 < m_encoder.getPosition() && m_encoder.getPosition() < 10.5){
+            } if(setDist[0] && !setDist[1] && 10.09 < m_encoder.getPosition() && m_encoder.getPosition() < 10.5){
                 m_leadMotor.set(-0.023);
 
-            } if(moveRotate && 10.5 < m_encoder.getPosition() && m_encoder.getPosition() < 10.8){
+            } if(setDist[0] && !setDist[1] && 10.5 < m_encoder.getPosition() && m_encoder.getPosition() < 10.8){
                 m_leadMotor.set(-0.045);
 
-            } if(moveRotate && m_encoder.getPosition() > 10.8){
+            } if(setDist[0] && !setDist[1] && m_encoder.getPosition() > 10.8){
                 m_leadMotor.set(-0.15);
 
             }
-        } else if(moveRotate && m_encoder.getPosition() > 9.98 && m_encoder.getPosition() < 10.05){
+        } else if(setDist[0] && !setDist[1] && m_encoder.getPosition() > 9.98 && m_encoder.getPosition() < 10.05){
             m_leadMotor.set(0);
 
-        } else if(!moveRotate){
+        } else if(!setDist[0] && !setDist[1]){
             m_leadMotor.set(var[0]);
         }
 
         //Since RevRobotics doesn't have a Encoder resetting function, I'm trying to make one here...?
-        if(var[0] == kEnd){ 
-            SmartDashboard.getNumber("Encoder Position", 0);
 
+        if(!setDist[0] && setDist[1]){ //Moves the 
+            m_encoder.setPosition(0);
         }
     }
     
-    public void driveCartesian(double var[]){    //Mecanum Wheels *new changed things on 11/23/19*
-        /* double var[] = ySpeed, xSpeed, zRotation in that order*/
-        double magnitude = 0.0;
-        magnitude = Math.pow(Math.pow(var[0], 2) + Math.pow(var[1], 2), 1/2);
-        driveL1.set(ControlMode.PercentOutput, magnitude);
+    public void driCartesian(double[] axis){    //Mecanum Wheels *new changed things on 11/26/19*
+        VictorSPX driveR1 = new VictorSPX(2); // Right is 3 4
+        VictorSPX driveR2 = new VictorSPX(4);
+        VictorSPX driveL1 = new VictorSPX(1); // Left is 1 2
+        VictorSPX driveL2 = new VictorSPX(3);
+        
+        if(-0.01 > axis[2] || axis[2] < 0.01){
+            driveL1.set(ControlMode.PercentOutput, axis[1]);  //should forward & backward move
+            driveR2.follow(driveL1);
+            driveR1.set(ControlMode.PercentOutput, -axis[1]);
+            driveL2.follow(driveR1);
+        }
 
+        if(-0.01 < axis[2] || axis[2] > 0.01){  //should strafe left/right
+            driveL1.set(ControlMode.PercentOutput, Math.signum(axis[2])*axis[0]);
+            driveR2.follow(driveL1);
+            driveR1.set(ControlMode.PercentOutput, -Math.signum(axis[2])*axis[0]);
+            driveL2.follow(driveR1);
+        }
     }
     
     public void fire()

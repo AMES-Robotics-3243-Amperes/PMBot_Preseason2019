@@ -116,7 +116,7 @@ public class Robot extends TimedRobot {
     
     //MC.setMax(IM.throttles(), IM.encoderMax()); //SparkMAX motor controller
     
-    mecDrive.driveCartesian(driveStick.getRawAxis(1), driveStick.getRawAxis(0), driveStick.getRawAxis(3));  //Trying mecanum stuff 11/23/19
+    MC.driCartesian(IM.throttles());  //Trying mecanum stuff 11/23/19
     
     //MC.setSparkTest(); // Test for Spark-Max closed-loop control
   }
