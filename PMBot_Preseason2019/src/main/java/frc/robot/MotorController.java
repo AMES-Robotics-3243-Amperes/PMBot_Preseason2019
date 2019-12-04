@@ -43,7 +43,7 @@ public class MotorController {
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM; // PID coefficients
 
     
-    //private MecanumDrive robotDrive = new MecanumDrive(driveL1, driveL2, driveR1, driveR2);
+    //private MecanumDrive robotDrive = new MecanumDrive(driveLT, driveLB, driveRT, driveRB);
 
     /*
     fireVent
@@ -234,24 +234,46 @@ public class MotorController {
     }
     
     public void driCartesian(double[] axis){    //Mecanum Wheels *new changed things on 11/26/19*
-        VictorSPX driveR1 = new VictorSPX(2); // Right is 3 4
-        VictorSPX driveR2 = new VictorSPX(4);
-        VictorSPX driveL1 = new VictorSPX(1); // Left is 1 2
-        VictorSPX driveL2 = new VictorSPX(3);
+        VictorSPX driveRT = new VictorSPX(3); // Right is 3 4
+        VictorSPX driveRB = new VictorSPX(1);
+        VictorSPX driveLT = new VictorSPX(4); // Left is 1 2
+        VictorSPX driveLB = new VictorSPX(2);
         
+        if(axis[0] < -0.1 || axis[0] > 0.1 && axis[1] == 0 && axis[2] == 0){    //Move forward/backward
+            driveLT.set(ControlMode.PercentOutput, axis[0]);
+            driveLB.follow(driveLT);
+            driveRT.set(ControlMode.PercentOutput, -axis[0]);
+            driveRB.follow(driveRT);
+        } else if(axis[1] < -0.1 || axis[1] > 0.1 && axis[0] == 0 && axis[2] == 0){ //Strafe right/left
+            driveLT.set(ControlMode.PercentOutput, axis[1]);
+            driveRB.follow(driveLT);
+            driveRT.set(ControlMode.PercentOutput, -axis[1]);
+            driveLB.follow(driveRT);
+        } else if(axis[2] > 0.1 && axis[0] == 0 && axis[1] == 0){   //Turn clockwise
+            driveLT.set(ControlMode.PercentOutput, Math.abs(axis[2]));
+            driveLB.follow(driveLT);
+            driveRT.set(ControlMode.PercentOutput, -Math.abs(axis[2]));
+            driveRB.follow(driveRT);
+        } else if(axis[2] < -0.1 && axis[0] == 0 && axis[1] == 0){  //Turn counterclockwisewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+            driveLT.set(ControlMode.PercentOutput, -Math.abs(axis[2]));
+            driveLB.follow(driveLT);
+            driveRT.set(ControlMode.PercentOutput, Math.abs(axis[2]));
+            driveRB.follow(driveRT);
+        }
+/*
         if(-0.01 > axis[2] || axis[2] < 0.01){
-            driveL1.set(ControlMode.PercentOutput, axis[1]);  //should forward & backward move
-            driveR2.follow(driveL1);
-            driveR1.set(ControlMode.PercentOutput, -axis[1]);
-            driveL2.follow(driveR1);
+            driveLT.set(ControlMode.PercentOutput, axis[1]);  //should forward & backward move
+            driveRB.follow(driveLT);
+            driveRT.set(ControlMode.PercentOutput, -axis[1]);
+            driveLB.follow(driveRT);
         }
 
         if(-0.01 < axis[2] || axis[2] > 0.01){  //should strafe left/right
-            driveL1.set(ControlMode.PercentOutput, Math.signum(axis[2])*axis[0]);
-            driveR2.follow(driveL1);
-            driveR1.set(ControlMode.PercentOutput, -Math.signum(axis[2])*axis[0]);
-            driveL2.follow(driveR1);
-        }
+            driveLT.set(ControlMode.PercentOutput, Math.signum(axis[2])*axis[0]);
+            driveRB.follow(driveLT);
+            driveRT.set(ControlMode.PercentOutput, -Math.signum(axis[2])*axis[0]);
+            driveLB.follow(driveRT);
+        }*/
     }
     
     public void fire()
