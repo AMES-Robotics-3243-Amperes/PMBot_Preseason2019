@@ -9,8 +9,10 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -49,6 +51,10 @@ public class Robot extends TimedRobot {
     VictorSPX driveR2 = new VictorSPX(4);
     VictorSPX driveL1 = new VictorSPX(1); // Left is 1 2
     VictorSPX driveL2 = new VictorSPX(2);
+
+    //Solenoid dummySolenoid = new Solenoid(0);
+    //Compressor c = new Compressor(0);
+    //c.setClosedLoopControl(true);
 
     MC = new MotorController();
     IM = new InputManager();

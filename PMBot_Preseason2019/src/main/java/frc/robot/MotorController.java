@@ -238,27 +238,34 @@ public class MotorController {
         VictorSPX driveRB = new VictorSPX(1);
         VictorSPX driveLT = new VictorSPX(4); // Left is 1 2
         VictorSPX driveLB = new VictorSPX(2);
+
+        System.out.println(axis[1]);
         
-        if(axis[0] < -0.1 || axis[0] > 0.1 && axis[1] == 0 && axis[2] == 0){    //Move forward/backward
+        if(axis[0] < -0.2 || axis[0] > 0.2 && axis[1] == 0 && axis[2] == 0){    //Move forward/backward
             driveLT.set(ControlMode.PercentOutput, axis[0]);
             driveLB.follow(driveLT);
             driveRT.set(ControlMode.PercentOutput, -axis[0]);
             driveRB.follow(driveRT);
-        } else if(axis[1] < -0.1 || axis[1] > 0.1 && axis[0] == 0 && axis[2] == 0){ //Strafe right/left
-            driveLT.set(ControlMode.PercentOutput, axis[1]);
-            driveRB.follow(driveLT);
-            driveRT.set(ControlMode.PercentOutput, -axis[1]);
-            driveLB.follow(driveRT);
+        } else if(axis[1] > 0.2 && axis[0] == 0 && axis[2] == 0){ //Strafe left
+            driveLT.set(ControlMode.PercentOutput, -Math.abs(axis[1]));
+            driveLB.set(ControlMode.PercentOutput, Math.abs(axis[1]));
+            driveRT.set(ControlMode.PercentOutput, -Math.abs(axis[1]));
+            driveRB.set(ControlMode.PercentOutput, Math.abs(axis[1]));
+        } else if(axis[1] < -0.2 && axis[0] == 0 && axis[2] == 0){  //Strafe right
+            driveLT.set(ControlMode.PercentOutput, Math.abs(axis[1]));
+            driveLB.set(ControlMode.PercentOutput, -Math.abs(axis[1]));
+            driveRT.set(ControlMode.PercentOutput, Math.abs(axis[1]));
+            driveRB.set(ControlMode.PercentOutput, -Math.abs(axis[1]));
         } else if(axis[2] > 0.1 && axis[0] == 0 && axis[1] == 0){   //Turn clockwise
-            driveLT.set(ControlMode.PercentOutput, Math.abs(axis[2]));
-            driveLB.follow(driveLT);
-            driveRT.set(ControlMode.PercentOutput, -Math.abs(axis[2]));
-            driveRB.follow(driveRT);
+            driveLT.set(ControlMode.PercentOutput, axis[2]);
+            driveLB.set(ControlMode.PercentOutput, axis[2]);
+            driveRT.set(ControlMode.PercentOutput, axis[2]);
+            driveRB.set(ControlMode.PercentOutput, axis[2]);
         } else if(axis[2] < -0.1 && axis[0] == 0 && axis[1] == 0){  //Turn counterclockwisewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-            driveLT.set(ControlMode.PercentOutput, -Math.abs(axis[2]));
-            driveLB.follow(driveLT);
-            driveRT.set(ControlMode.PercentOutput, Math.abs(axis[2]));
-            driveRB.follow(driveRT);
+            driveLT.set(ControlMode.PercentOutput, axis[2]);
+            driveLB.set(ControlMode.PercentOutput, axis[2]);
+            driveRT.set(ControlMode.PercentOutput, axis[2]);
+            driveRB.set(ControlMode.PercentOutput, axis[2]);
         }
 /*
         if(-0.01 > axis[2] || axis[2] < 0.01){
