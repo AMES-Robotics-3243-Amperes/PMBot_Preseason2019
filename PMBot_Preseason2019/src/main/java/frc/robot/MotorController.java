@@ -46,18 +46,17 @@ public class MotorController {
     //private MecanumDrive robotDrive = new MecanumDrive(driveLT, driveLB, driveRT, driveRB);
 
     /*
-    fireVent
-       |
-    V--+--fireValve---+
-    V                 +--Tank--Compressor
-    V--+--resetValve--+
-       |
     resetVent
+       |
+    V--+--+--fireValve1--+
+    V     +--fireValve2--+
+    V                    +--Tank--Compressor
+    V-----resetValve-----+
     */
-    Solenoid fireValve = new Solenoid(1); // F
-    Solenoid fireVent = new Solenoid(2); // FV
-    Solenoid resetValve = new Solenoid(3); // R
-    Solenoid resetVent = new Solenoid(4); // RV
+    Solenoid fireValve1 = new Solenoid(1); // F1
+    Solenoid fireValve2 = new Solenoid(2); // F2
+    Solenoid resetValve = new Solenoid(3); // R 3-port solenoid; doubles as fire vent (venting when unpowered)
+    Solenoid resetVent = new Solenoid(5); // RV
 
     private double x;   //Testing Mecanum code from another team on GitHub 10/22/19
     private double y;   //Testing Mecanum code from another team on GitHub 10/22/19
@@ -140,42 +139,7 @@ public class MotorController {
         SmartDashboard.putNumber("ProcessVariable", m_encoder.getVelocity());
     }
 
-    //   --------------------   BEGIN PNEUMATICS CODE   --------------------
-    private static class PMState{
-        float stateTime;
-        boolean fireValve;
-        boolean fireVent;
-        boolean resetValve;
-        boolean resetVent;
-        public PMState(float stateTime, boolean f, boolean fv, boolean r, boolean rv)
-        {
-            this.stateTime = stateTime;
-            fireValve = f;
-            fireVent = fv;
-            resetValve = r;
-            resetVent = rv;
-        }
-    }
-    // Pneumatics: false=closed, true=open
-    private final PMState pmStandby = new PMState(100, false, false, true, false); // The default state, when not in a firing cycle.
-    private int pmSeqIdx = 0; // Index in pmFireSequence that I'm currently on
-    private final PMState[] pmFireSequence = {
-        new PMState(0.25f, true, false, false, true), // Fire
-        new PMState(0.1f, false, false, false, false), // pre Reset
-        new PMState(0.25f, false, true, true, false), // Reset
-        new PMState(0.1f, false, false, false, false) // pre Standby
-    };
-    private PMState fireState = pmStandby; // Always use setFireState() to change this!
-    /** Returns true if the piston has been fired and cannot shoot until it retracts. Returns false otherwise. */
-    //public PMState getFireState() { return fireState; }
-    public void setFireState(PMState value) {
-        fireState = value;
-        timeAtLastStateChange = Timer.getFPGATimestamp();
-    }
-    private double timeAtLastStateChange = 0;
-    public double timeSinceStateChange() {
-        return Timer.getFPGATimestamp() - timeAtLastStateChange;
-    }
+    
 
     public void setMax(double var[], boolean[] setDist){
         long startTime = System.currentTimeMillis();
@@ -188,7 +152,7 @@ public class MotorController {
         
         long timeNow = System.currentTimeMillis();
         timeNow = timeNow - startTime;
-        System.out.println(timeNow);
+        //System.out.println(timeNow);
 
         if(setDist[0] && !setDist[1] && timeNow <= 5000){
 
@@ -239,7 +203,7 @@ public class MotorController {
         VictorSPX driveLT = new VictorSPX(4); // Left is 1 2
         VictorSPX driveLB = new VictorSPX(2);
 
-        System.out.println(axis[1]);
+        //System.out.println(axis[1]);
         
         if(axis[0] < -0.2 || axis[0] > 0.2 && axis[1] == 0 && axis[2] == 0){    //Move forward/backward
             driveLT.set(ControlMode.PercentOutput, axis[0]);
@@ -283,6 +247,45 @@ public class MotorController {
         }*/
     }
     
+
+
+
+    //   --------------------   BEGIN PNEUMATICS CODE   --------------------
+    private static class PMState{
+        float stateTime;
+        boolean fireValve1;
+        boolean fireValve2;
+        boolean resetValve;
+        boolean resetVent;
+        public PMState(float stateTime, boolean f1, boolean f2, boolean r, boolean rv)
+        {
+            this.stateTime = stateTime;
+            fireValve1 = f1;
+            fireValve2 = f2;
+            resetValve = r;
+            resetVent = rv;
+        }
+    }
+    // Pneumatics: false=closed, true=open
+    private final PMState pmStandby = new PMState(100, false, false, false, false); // The default state, when not in a firing cycle.
+    private int pmSeqIdx = 0; // Index in pmFireSequence that I'm currently on
+    private final PMState[] pmFireSequence = {
+        new PMState(0.25f, true, true, false, false), // Fire
+        new PMState(0.1f, false, false, false, false), // pre Reset
+        new PMState(0.25f, false, false, true, true) // Reset
+    };
+    private PMState fireState = pmStandby; // Always use setFireState() to change this!
+    /** Returns true if the piston has been fired and cannot shoot until it retracts. Returns false otherwise. */
+    //public PMState getFireState() { return fireState; }
+    public void setFireState(PMState value) {
+        fireState = value;
+        timeAtLastStateChange = Timer.getFPGATimestamp();
+    }
+    private double timeAtLastStateChange = 0;
+    public double timeSinceStateChange() {
+        return Timer.getFPGATimestamp() - timeAtLastStateChange;
+    }
+
     public void fire()
     {
         if(fireState != pmStandby)
@@ -298,23 +301,31 @@ public class MotorController {
      */
     public void enabledPeriodic()
     {
+        //System.out.println(pmSeqIdx);
+
         // In in a fire cycle, set solenoids to appropriate states and check for moving to the next step
         if(fireState != pmStandby)
         {
-            fireValve.set(fireState.fireValve);
-            fireVent.set(fireState.fireVent);
-            resetValve.set(fireState.resetValve);
-            resetVent.set(fireState.resetVent);
-
             if(timeSinceStateChange() > fireState.stateTime) // Time to move to the next step?
             {
+                //System.out.println("next step");
                 pmSeqIdx++;
                 if(pmSeqIdx < pmFireSequence.length)
                     setFireState(pmFireSequence[pmSeqIdx]);
                 else
+                {
                     setFireState(pmStandby);
+                    //System.out.println("standby reset");
+                    }
             }
         }
+
+        fireValve1.set(fireState.fireValve1);
+        fireValve2.set(fireState.fireValve2);
+        resetValve.set(fireState.resetValve);
+        resetVent.set(fireState.resetVent);
+
+        
     }
 
     public void setX(double x){ //Testing Mecanum code from another team on GitHub 10/22/19
