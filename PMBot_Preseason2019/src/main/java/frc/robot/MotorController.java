@@ -42,9 +42,6 @@ public class MotorController {
     private CANPIDController leadPIDController;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM; // PID coefficients
 
-    
-    //private MecanumDrive robotDrive = new MecanumDrive(driveLT, driveLB, driveRT, driveRB);
-
     /*
     resetVent
        |
@@ -58,10 +55,6 @@ public class MotorController {
     Solenoid resetValve = new Solenoid(3); // R 3-port solenoid; doubles as fire vent (venting when unpowered)
     Solenoid resetVent = new Solenoid(5); // RV
 
-    private double x;   //Testing Mecanum code from another team on GitHub 10/22/19
-    private double y;   //Testing Mecanum code from another team on GitHub 10/22/19
-    private double z;   //Testing Mecanum code from another team on GitHub 10/22/19
-    
     public MotorController() // Constructed in Robot.robotInit()
     {
         leadPIDController = m_leadMotor.getPIDController();
@@ -138,8 +131,6 @@ public class MotorController {
         SmartDashboard.putNumber("SetPoint", rotations);
         SmartDashboard.putNumber("ProcessVariable", m_encoder.getVelocity());
     }
-
-    
 
     public void setMax(double var[], boolean[] setDist){
         long startTime = System.currentTimeMillis();
@@ -229,27 +220,7 @@ public class MotorController {
             driveLB.set(ControlMode.PercentOutput, -axis[2]);
             driveRT.set(ControlMode.PercentOutput, -axis[2]);
             driveRB.set(ControlMode.PercentOutput, -axis[2]);
-        } /*else if(diagnol == 45 && axis[0] == 0 && axis[1] == 0 && axis[2] == 0){   //Strafe North East (Upper right)
-            driveLT.set(ControlMode.PercentOutput, 1);
-            driveLB.set(ControlMode.PercentOutput, 1);
-            driveRT.set(ControlMode.PercentOutput, 1);
-            driveRB.set(ControlMode.PercentOutput, 1);
-        } else if(diagnol == 135 && axis[0] == 0 && axis[1] == 0 && axis[2] == 0){  //Strafe South East (Lower right)
-            driveLT.set(ControlMode.PercentOutput, 1);
-            driveLB.set(ControlMode.PercentOutput, 1);
-            driveRT.set(ControlMode.PercentOutput, 1);
-            driveRB.set(ControlMode.PercentOutput, 1);
-        } else if(diagnol == 225 && axis[0] == 0 && axis[1] == 0 && axis[2] == 0){  //Strafe North West (Upper left)
-            driveLT.set(ControlMode.PercentOutput, 1);
-            driveLB.set(ControlMode.PercentOutput, 1);
-            driveRT.set(ControlMode.PercentOutput, 1);
-            driveRB.set(ControlMode.PercentOutput, 1);
-        } else if(diagnol == 315 && axis[0] == 0 && axis[1] == 0 && axis[2] == 0){  //Strafe South West (Lower left)
-            driveLT.set(ControlMode.PercentOutput, 1);
-            driveLB.set(ControlMode.PercentOutput, 1);
-            driveRT.set(ControlMode.PercentOutput, 1);
-            driveRB.set(ControlMode.PercentOutput, 1);
-        }*/
+        }
     }
     
 
@@ -332,15 +303,4 @@ public class MotorController {
 
         
     }
-
-    public void setX(double x){ //Testing Mecanum code from another team on GitHub 10/22/19
-        this.x = x;
-    }
-    public void setY(double y){ //Testing Mecanum code from another team on GitHub 10/22/19
-        this.y = y;
-    }
-    public void setZ(double z){ //Testing Mecanum code from another team on GitHub 10/22/19
-        this.z = z;
-    }
-
 }

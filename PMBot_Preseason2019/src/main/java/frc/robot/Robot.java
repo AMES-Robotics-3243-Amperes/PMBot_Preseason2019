@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -49,7 +50,7 @@ public class Robot extends TimedRobot {
 
     //Solenoid dummySolenoid = new Solenoid(0);
     Compressor c = new Compressor(0);
-    //c.setClosedLoopControl(true);
+    c.setClosedLoopControl(true);
 
     MC = new MotorController();
     IM = new InputManager();
@@ -92,6 +93,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    Compressor c = new Compressor(0);
+    c.setClosedLoopControl(true);
     MC.enabledPeriodic();
 
     switch (m_autoSelected) {
@@ -101,8 +104,13 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
       default:
         // Put default auto code here
+        if(true){
+          Timer.delay(.75); //delays the if loop by 1 second
+          MC.fire();  //Continuous pneumatic shooting
+        }
         break;
     }
+    
   }
 
   /**
