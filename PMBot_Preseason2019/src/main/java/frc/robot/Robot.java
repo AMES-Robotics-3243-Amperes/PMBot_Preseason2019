@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
 
     //Solenoid dummySolenoid = new Solenoid(0);
     Compressor c = new Compressor(0);
-    c.setClosedLoopControl(true);
+    //c.setClosedLoopControl(true);
 
     MC = new MotorController();
     IM = new InputManager();
@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
     
     //MC.setMax(IM.throttles(), IM.encoderMax()); //SparkMAX motor controller
     
-    MC.driCartesian(IM.throttles(), IM.mecanumPOV());
+    MC.driCartesian(IM.throttles());
     
     //MC.setSparkTest(); // Test for Spark-Max closed-loop control
   }
