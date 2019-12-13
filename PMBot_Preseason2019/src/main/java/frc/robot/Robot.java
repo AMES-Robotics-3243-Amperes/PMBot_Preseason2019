@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -69,6 +70,9 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
   }
 
+  double timeAtLastFire = -100;
+  int numFires = 0;
+
   /**
    * This autonomous (along with the chooser code above) shows how to select
    * between different autonomous modes using the dashboard. The sendable
@@ -97,6 +101,15 @@ public class Robot extends TimedRobot {
     c.setClosedLoopControl(true);
     MC.enabledPeriodic();
 
+    if(Timer.getFPGATimestamp() - 1 >= timeAtLastFire
+      && numFires < 6) // Fire 1 extra time, just in case
+    {
+      MC.fire();
+      timeAtLastFire = Timer.getFPGATimestamp();
+      numFires++;
+    }
+
+    // auto-generated code:
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
