@@ -34,13 +34,16 @@ public class InputManager {
         //return rawValue;
     }
 
+    public int mecanumPOV(){
+        return inputOne.getPOV();
+    }
     public double[] throttles()
     {
         return new double[] {
             - processJoyst(inputOne.getRawAxis(1)), //double[0]
             - processJoyst(inputOne.getRawAxis(0)), //double[1]
             - processJoyst(inputOne.getRawAxis(3)) //double[2]
-         //   - processJoyst(inputOne.getRawAxis(2))  //double[3]
+            //   - processJoyst(inputOne.getRawAxis(2))  //double[3]
             //double[0] = ySpeed double[1] = xSpeed double[2] = zRotation *for Mecanum Wheels*
         };
     }

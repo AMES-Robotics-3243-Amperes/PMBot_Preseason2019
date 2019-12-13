@@ -232,8 +232,9 @@ public class MotorController {
             m_encoder.setPosition(0);
         }
     }
-    
-    public void driCartesian(double[] axis){    //Mecanum Wheels *new changed things on 11/26/19*
+
+    //    ------------------ BEGIN MECANUM WHEEL CODE ------------------
+    public void driCartesian(double[] axis, int diagnol){
         VictorSPX driveRT = new VictorSPX(3); // Right is 3 4
         VictorSPX driveRB = new VictorSPX(1);
         VictorSPX driveLT = new VictorSPX(4); // Left is 1 2
@@ -241,46 +242,52 @@ public class MotorController {
 
         System.out.println(axis[1]);
         
-        if(axis[0] < -0.2 || axis[0] > 0.2 && axis[1] == 0 && axis[2] == 0){    //Move forward/backward
+        if(axis[0] < -0.2 || axis[0] > 0.2 && axis[1] == 0 && axis[2] == 0 && diagnol == -1){    //Move forward/backward
             driveLT.set(ControlMode.PercentOutput, axis[0]);
             driveLB.follow(driveLT);
             driveRT.set(ControlMode.PercentOutput, -axis[0]);
             driveRB.follow(driveRT);
-        } else if(axis[1] > 0.2 && axis[0] == 0 && axis[2] == 0){ //Strafe left
+        } else if(axis[1] > 0.2 && axis[0] == 0 && axis[2] == 0 && diagnol == -1){ //Strafe left
             driveLT.set(ControlMode.PercentOutput, -Math.abs(axis[1]));
             driveLB.set(ControlMode.PercentOutput, Math.abs(axis[1]));
             driveRT.set(ControlMode.PercentOutput, -Math.abs(axis[1]));
             driveRB.set(ControlMode.PercentOutput, Math.abs(axis[1]));
-        } else if(axis[1] < -0.2 && axis[0] == 0 && axis[2] == 0){  //Strafe right
+        } else if(axis[1] < -0.2 && axis[0] == 0 && axis[2] == 0 && diagnol == -1){  //Strafe right
             driveLT.set(ControlMode.PercentOutput, Math.abs(axis[1]));
             driveLB.set(ControlMode.PercentOutput, -Math.abs(axis[1]));
             driveRT.set(ControlMode.PercentOutput, Math.abs(axis[1]));
             driveRB.set(ControlMode.PercentOutput, -Math.abs(axis[1]));
-        } else if(axis[2] > 0.1 && axis[0] == 0 && axis[1] == 0){   //Turn clockwise
+        } else if(axis[2] > 0.1 && axis[0] == 0 && axis[1] == 0 && diagnol == -1){   //Turn clockwise
             driveLT.set(ControlMode.PercentOutput, axis[2]);
             driveLB.set(ControlMode.PercentOutput, axis[2]);
             driveRT.set(ControlMode.PercentOutput, axis[2]);
             driveRB.set(ControlMode.PercentOutput, axis[2]);
-        } else if(axis[2] < -0.1 && axis[0] == 0 && axis[1] == 0){  //Turn counterclockwisewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+        } else if(axis[2] < -0.1 && axis[0] == 0 && axis[1] == 0 && diagnol == -1){  //Turn counterclockwise
             driveLT.set(ControlMode.PercentOutput, axis[2]);
             driveLB.set(ControlMode.PercentOutput, axis[2]);
             driveRT.set(ControlMode.PercentOutput, axis[2]);
             driveRB.set(ControlMode.PercentOutput, axis[2]);
+        } else if(diagnol == 45 && axis[0] == 0 && axis[1] == 0 && axis[2] == 0){   //Strafe North East (Upper right)
+            driveLT.set(ControlMode.PercentOutput, 1);
+            driveLB.set(ControlMode.PercentOutput, 1);
+            driveRT.set(ControlMode.PercentOutput, 1);
+            driveRB.set(ControlMode.PercentOutput, 1);
+        } else if(diagnol == 135 && axis[0] == 0 && axis[1] == 0 && axis[2] == 0){  //Strafe South East (Lower right)
+            driveLT.set(ControlMode.PercentOutput, 1);
+            driveLB.set(ControlMode.PercentOutput, 1);
+            driveRT.set(ControlMode.PercentOutput, 1);
+            driveRB.set(ControlMode.PercentOutput, 1);
+        } else if(diagnol == 225 && axis[0] == 0 && axis[1] == 0 && axis[2] == 0){  //Strafe North West (Upper left)
+            driveLT.set(ControlMode.PercentOutput, 1);
+            driveLB.set(ControlMode.PercentOutput, 1);
+            driveRT.set(ControlMode.PercentOutput, 1);
+            driveRB.set(ControlMode.PercentOutput, 1);
+        } else if(diagnol == 315 && axis[0] == 0 && axis[1] == 0 && axis[2] == 0){  //Strafe South West (Lower left)
+            driveLT.set(ControlMode.PercentOutput, 1);
+            driveLB.set(ControlMode.PercentOutput, 1);
+            driveRT.set(ControlMode.PercentOutput, 1);
+            driveRB.set(ControlMode.PercentOutput, 1);
         }
-/*
-        if(-0.01 > axis[2] || axis[2] < 0.01){
-            driveLT.set(ControlMode.PercentOutput, axis[1]);  //should forward & backward move
-            driveRB.follow(driveLT);
-            driveRT.set(ControlMode.PercentOutput, -axis[1]);
-            driveLB.follow(driveRT);
-        }
-
-        if(-0.01 < axis[2] || axis[2] > 0.01){  //should strafe left/right
-            driveLT.set(ControlMode.PercentOutput, Math.signum(axis[2])*axis[0]);
-            driveRB.follow(driveLT);
-            driveRT.set(ControlMode.PercentOutput, -Math.signum(axis[2])*axis[0]);
-            driveLB.follow(driveRT);
-        }*/
     }
     
     public void fire()
